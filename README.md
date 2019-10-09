@@ -13,6 +13,9 @@ As an example, see some of my own notes
 
 ### fish
 
+Set the variables `ual_path` and `ual_author` in your `config.fish` file (the
+defaults are `$HOME/.notes` and empty, respectively).
+
 #### Fisher
 
     fisher add gpanders/ual
@@ -20,6 +23,9 @@ As an example, see some of my own notes
 -------------------------------------------------------------------------------
 
 ### zsh
+
+Set the variables `UAL_HOME` and `UAL_AUTHOR` in your `.zshrc` (the defaults
+are `$HOME/.notes` and empty, respectively).
 
 #### Antigen
 
