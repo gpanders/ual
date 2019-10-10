@@ -9,6 +9,15 @@ material.
 As an example, see some of my own notes
 [here](https://github.com/gpanders/notes).
 
+## Prerequisites
+
+[`pandoc`](https://pandoc.org/installing.html) and
+[`groff`](https://www.gnu.org/software/groff/) are required to convert Markdown
+documents into `man` page format.
+
+`groff` comes pre-installed on most Unix systems. Both are available on almost
+all package managers.
+
 ## Installation
 
 ### fish
