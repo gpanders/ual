@@ -60,6 +60,6 @@ function ual --description "Read and edit ual pages"
                 --metadata=author:"$ual_author" \
                 --metadata=section:"$ual_section" \
                 --metadata=date:"$date" \
-                $note | groff -T utf8 -man | less --squeeze-blank-lines --quit-if-one-screen --no-init
+                $note | tbl | groff -T utf8 -man | less --RAW-CONTROL-CHARS --squeeze-blank-lines --quit-if-one-screen --no-init
     end
 end
