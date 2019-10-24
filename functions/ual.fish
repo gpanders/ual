@@ -4,7 +4,10 @@ function ual --description "Read and edit ual pages"
         return
     end
 
-    set -q ual_path; or set ual_path "$HOME/.notes"
+    set -q ual_path
+    or set ual_path "$HOME/.notes"
+    set -q ual_ext
+    or set ual_ext md
 
     switch $argv[1]
         case edit
@@ -13,9 +16,15 @@ function ual --description "Read and edit ual pages"
                 return
             end
             mkdir -p "$ual_path"
-            set note "$ual_path"/$argv[2].md
-            if not test -f $note
-                printf "# NAME\n\n%s\n" "$argv[2]" > $note
+            set note "$ual_path"/*$argv[2]*
+            if test (count $note) -gt 1
+                # TODO: Prompt for selection
+                echo "Found multiple matches:"\n $note\n
+                return 1
+            end
+            if test -z $note
+                set note "$ual_path"/$argv[2].$ual_ext
+                printf "# NAME\n\n%s\n" "$argv[2]" >$note
             end
             $EDITOR $note
         case rm
@@ -23,8 +32,13 @@ function ual --description "Read and edit ual pages"
                 echo "Which ual page do you want to remove?"
                 return
             end
-            set note "$ual_path"/$argv[2].md
-            if not test -f $note
+            set note "$ual_path"/*$argv[2]*
+            if test (count $note) -gt 1
+                # TODO: Prompt for selection
+                echo "Found multiple matches:"\n $note\n
+                return 1
+            end
+            if test -z $note
                 echo "No ual entry for $argv[2]" >&2
                 return 1
             end
@@ -42,24 +56,55 @@ function ual --description "Read and edit ual pages"
             and cd -
             echo "Done."
         case '*'
-            set note "$ual_path"/$argv[1].md
+            set -l extensions $ual_ext md scd
+            for ext in $extensions
+                if test -f "$ual_path"/$argv[1].$ext
+                    set note "$ual_path"/$argv[1].$ext
+                    break
+                end
+            end
 
             if not test -f $note
                 echo "No ual entry for $argv[1]" >&2
                 return 1
             end
 
-            set title (echo $argv[1] | tr '[:lower:]' '[:upper:]')
-            set -q ual_section; or set ual_section "ual"
-            set date (date -r $note "+%B %d, %Y")
+            if begin
+                    test $ext = "md" && not command -sq pandoc
+                end
+                or begin
+                    test $ext = "scd" && not command -sq scdoc
+                end
+                echo "Formatter for filetype $ext not found; displaying note unformatted..." >&2
+                eval "$PAGER $note"
+                return 0
+            end
 
-            pandoc \
-                --standalone \
-                --to=man \
-                --metadata=title:"$title" \
-                --metadata=author:"$ual_author" \
-                --metadata=section:"$ual_section" \
-                --metadata=date:"$date" \
-                $note | tbl | groff -T utf8 -man | less --RAW-CONTROL-CHARS --squeeze-blank-lines --quit-if-one-screen --no-init
+            set -l tmp (mktemp)
+
+            switch $ext
+                case md
+                    set -l title (echo $argv[1] | tr '[:lower:]' '[:upper:]')
+                    set -q ual_section
+                    or set ual_section "ual"
+                    set date (date -r $note "+%B %d, %Y")
+
+                    pandoc \
+                        --standalone \
+                        --to=man \
+                        --metadata=title:"$title" \
+                        --metadata=author:"$ual_author" \
+                        --metadata=section:"$ual_section" \
+                        --metadata=date:"$date" \
+                        --output=$tmp \
+                        $note
+                case scd
+                    set -q ual_author
+                    and set author (printf "# AUTHOR\n%s\n" $ual_author)
+                    echo \n$author | cat $note - | scdoc >$tmp
+            end
+
+            man $tmp
+            rm -f $tmp
     end
 end
