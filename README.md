@@ -11,19 +11,17 @@ As an example, see some of my own notes
 
 ## Prerequisites
 
-[`pandoc`](https://pandoc.org/installing.html) and
-[`groff`](https://www.gnu.org/software/groff/) are required to convert Markdown
-documents into `man` page format.
-
-`groff` comes pre-installed on most Unix systems. Both are available on almost
-all package managers.
+- [`pandoc`](https://pandoc.org/installing.html) if you want to write notes in
+  Markdown
+- [`scdoc`](https://drewdevault.com/2018/05/13/scdoc.html) if you want to write
+  notes in `scdoc` format
 
 ## Installation
 
 ### fish
 
-Set the variables `ual_path` and `ual_author` in your `config.fish` file (the
-defaults are `$HOME/.notes` and empty, respectively).
+**Optional**: Set the variables `ual_path` and `ual_author` in your
+`config.fish` file (the defaults are `$HOME/.notes` and empty, respectively).
 
 #### Fisher
 
@@ -33,8 +31,8 @@ defaults are `$HOME/.notes` and empty, respectively).
 
 ### zsh
 
-Set the variables `UAL_HOME` and `UAL_AUTHOR` in your `.zshrc` (the defaults
-are `$HOME/.notes` and empty, respectively).
+**Optional**: Set the variables `UAL_HOME` and `UAL_AUTHOR` in your `.zshrc`
+(the defaults are `$HOME/.notes` and empty, respectively).
 
 #### Antigen
 
@@ -62,6 +60,9 @@ To view a note called `foo`, simply use
 To create or modify the `foo` note, use
 
     ual edit foo
+
+By default, `ual` will create new notes in Markdown format (`.md`). If you want
+to default to `scdoc`, set the shell variable `ual_ext` to `scd`.
 
 You can list all notes with
 
