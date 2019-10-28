@@ -11,45 +11,20 @@ As an example, see some of my own notes
 
 ## Prerequisites
 
-- [`pandoc`](https://pandoc.org/installing.html) if you want to write notes in
-  Markdown
-- [`scdoc`](https://drewdevault.com/2018/05/13/scdoc.html) if you want to write
-  notes in `scdoc` format
+-   [`scdoc`](https://drewdevault.com/2018/05/13/scdoc.html)
 
 ## Installation
 
-### fish
+### macOS
 
-**Optional**: Set the variables `ual_path` and `ual_author` in your
-`config.fish` file (the defaults are `$HOME/.notes` and empty, respectively).
+```
+brew install gpanders/tap/ual
+```
 
-#### Fisher
+### Other Platforms
 
-    fisher add gpanders/ual
-
--------------------------------------------------------------------------------
-
-### zsh
-
-**Optional**: Set the variables `UAL_HOME` and `UAL_AUTHOR` in your `.zshrc`
-(the defaults are `$HOME/.notes` and empty, respectively).
-
-#### Antigen
-
-    antigen bundle gpanders/ual
-
-#### Oh My Zsh
-
-1.  Clone this repository into `~/.oh-my-zsh/custom/plugins`
-
-        git clone https://github.com/gpanders/ual ~/.oh-my-zsh/custom/plugins/ual
-
-2.  Add the plugin to the list of plugins for Oh My Zsh to load (inside
-    `~/.zshrc`)
-
-        plugins=(ual)
-
--------------------------------------------------------------------------------
+Simply copy the `ual` script to anywhere in your `PATH` (e.g. `/usr/local/bin/`
+or `$HOME/.local/bin/`).
 
 ## Usage
 
@@ -61,8 +36,8 @@ To create or modify the `foo` note, use
 
     ual edit foo
 
-By default, `ual` will create new notes in Markdown format (`.md`). If you want
-to default to `scdoc`, set the shell variable `ual_ext` to `scd`.
+This will open the `foo` note in the editor set in the `$EDITOR` environment
+variable, or simply `vi` if `$EDITOR` is unset.
 
 You can list all notes with
 
@@ -77,13 +52,24 @@ notes with
 
     ual sync
 
-## Writing Notes
+`ual` will look for notes in `$UAL_PATH` or `$HOME/.notes` if `$UAL_PATH` is
+unset.
 
-There is no requirement on how you write your notes; however, in order to make
-your notes look as much like a real man page as possible, you can use the
-following template:
+## Why scdoc?
 
-``` {.markdown}
+[`scdoc`](https://drewdevault.com/2018/05/13/scdoc.html) is a lightweight tool
+specifically designed for writing man pages. Like Markdown, the syntax is
+plain-text readable and simple to write.
+
+`scdoc` is available in many distribution repositories, and if it's not, it can
+be simply downloaded [here](https://git.sr.ht/~sircmpwn/scdoc) and placed on
+your PATH.
+
+An example `scdoc` file can be found below.
+
+````
+foo(1)
+
 # NAME
 
 foo - A description of foo
@@ -92,20 +78,21 @@ foo - A description of foo
 
 Some notes about foo that I want to remember.
 
-You can use Markdown definition lists for things like option flags:
+	Tabs should be used for indenting.
 
--f
-:  Force foo to do something
+## SUBHEADING
 
--r
-:  Make foo use the -r flag
+This is *bold* text, and this is _underlined_ text.
 
-## Subheading
+*-f*
+	Force foo to do something
 
-Subheadings are indented one level in the final man page output. The case of
-the headings (lower, upper, or mixed) does not matter.
+*-r*
+	Make foo use the -r flag
 
-# REFERENCES
 
--  <http://www.foo.com/a-page-describing-foo>
 ```
+Use triple backticks to escape all scdoc formatting
+For example, *this text* will not be bold, and _this text_ will not be underlined.
+```
+````
