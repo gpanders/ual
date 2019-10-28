@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+_ual () {
+    if [ "${#COMP_WORDS[@]}" -gt 3 ]; then
+        return
+    fi
+
+    local notes=()
+    for note in "${UAL_PATH:-$HOME/.notes}"/*; do
+        notes+=($(basename -- "${note%.*}"))
+    done
+
+    case "${COMP_WORDS[1]}" in
+        rm|edit)
+            COMPREPLY=($(compgen -W "${notes[*]}" -- "${COMP_WORDS[2]}"))
+            ;;
+        ls|sync)
+            return
+            ;;
+        *)
+            COMPREPLY=($(compgen -W "edit rm ls sync ${notes[*]}" "${COMP_WORDS[1]}"))
+            ;;
+    esac
+} &&
+complete -F _ual ual
