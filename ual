@@ -18,7 +18,7 @@ case "$1" in
         mkdir -p "$NOTES"
         NOTE="$NOTES"/$2.scd
         if [ ! -f "$NOTE" ]; then
-            printf "# NAME\n\n%s\n" "$2" > "$NOTE"
+            printf '%s(1) "" "ual"\n\n# NAME\n\n%s\n' "$2" "$2" > "$NOTE"
         fi
         ${EDITOR:-vi} "$NOTE"
         ;;
