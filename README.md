@@ -23,8 +23,9 @@ brew install gpanders/tap/ual
 
 ### Other Platforms
 
-Simply copy the `ual` script to anywhere in your `PATH` (e.g. `/usr/local/bin/`
-or `$HOME/.local/bin/`).
+```
+curl -sLo /usr/local/bin/ual https://git.io/JerRw
+```
 
 ## Usage
 
