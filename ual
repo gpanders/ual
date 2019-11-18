@@ -2,64 +2,67 @@
 
 set -e
 
-if [ $# -lt 1 ]; then
-    echo "Which ual page do you want?"
-    return
-fi
-
 NOTES="${UAL_PATH:-$HOME/.notes}"
 
-case "$1" in
-    edit)
-        if [ $# -lt 2 ]; then
-            echo "Which ual page do you want to edit?"
-            return
-        fi
-        mkdir -p "$NOTES"
-        NOTE="$NOTES"/$2.scd
-        if [ ! -f "$NOTE" ]; then
-            printf '%s(1) "" "ual"\n\n# NAME\n\n%s\n' "$2" "$2" > "$NOTE"
-        fi
-        ${EDITOR:-vi} "$NOTE"
-        ;;
-    rm)
-        if [ $# -lt 2 ]; then
-            echo "Which ual page do you want to remove?"
-            return
-        fi
-        NOTE="$NOTES"/$2.scd
-        if [ ! -f "$NOTE" ]; then
-            echo "No ual entry for $1" >&2
-            return 1
-        fi
-        rm "$NOTE"
-        ;;
-    ls)
-        for note in "$NOTES"/*; do
-            command basename -- "${note%.*}"
-        done
-        ;;
-    sync)
-        echo -n "Syncing notes... "
-        (cd "$NOTES" && \
-            git pull &>/dev/null && \
-            git add . && \
-            git commit --dry-run &>/dev/null && \
-            git commit --quiet --verbose 2>/dev/null && \
-            git push &>/dev/null)
-        echo "Done."
-        ;;
-    *)
-        NOTE="$NOTES"/$1.scd
+ual() {
+    if [[ $# -lt 1 ]]; then
+        echo "Which ual page do you want?"
+        return
+    fi
 
-        if [ ! -f "$NOTE" ]; then
-            echo "No ual entry for $1" >&2
-            exit 1
-        fi
+    case "$1" in
+        edit)
+            if [[ $# -lt 2 ]]; then
+                echo "Which ual page do you want to edit?"
+                return
+            fi
+            mkdir -p "$NOTES"
+            NOTE="$NOTES"/$2.scd
+            if [[ ! -f "$NOTE" ]]; then
+                printf '%s(1) "" "ual"\n\n# NAME\n\n%s\n' "$2" "$2" > "$NOTE"
+            fi
+            ${EDITOR:-vi} "$NOTE"
+            ;;
+        rm)
+            if [[ $# -lt 2 ]]; then
+                echo "Which ual page do you want to remove?"
+                return
+            fi
+            NOTE="$NOTES"/$2.scd
+            if [[ ! -f "$NOTE" ]]; then
+                echo "No ual entry for $1" >&2
+                return 1
+            fi
+            rm "$NOTE"
+            ;;
+        ls)
+            for note in "$NOTES"/*; do
+                command basename -- "${note%.*}"
+            done
+            ;;
+        sync)
+            echo -n "Syncing notes... "
+            (cd "$NOTES" && \
+                git pull &>/dev/null && \
+                git add . && \
+                git commit --dry-run &>/dev/null && \
+                git commit --quiet --verbose 2>/dev/null && \
+                git push &>/dev/null)
+            echo "Done."
+            ;;
+        *)
+            NOTE="$NOTES"/$1.scd
 
-        tmp=$(mktemp)
-        scdoc < "$NOTE" > "$tmp"
-        man "$tmp"
-        rm -f "$tmp"
-        ;;
-esac
+            if [[ ! -f "$NOTE" ]]; then
+                echo "No ual entry for $1" >&2
+                return 1
+            fi
+
+            tmp=$(mktemp)
+            scdoc < "$NOTE" > "$tmp"
+            man "$tmp"
+            rm -f "$tmp"
+            ;;
+    esac
+}
+ual "$@"
