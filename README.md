@@ -11,7 +11,7 @@ As an example, see some of my own notes
 
 ## Prerequisites
 
--   [`scdoc`](https://drewdevault.com/2018/05/13/scdoc.html)
+-   [`pandoc`](https://pandoc.org/)
 
 ## Installation
 
@@ -56,21 +56,12 @@ notes with
 `ual` will look for notes in `$UAL_PATH` or `$HOME/.notes` if `$UAL_PATH` is
 unset.
 
-## Why scdoc?
+## Writing Notes
 
-[`scdoc`](https://drewdevault.com/2018/05/13/scdoc.html) is a lightweight tool
-specifically designed for writing man pages. Like Markdown, the syntax is
-plain-text readable and simple to write.
-
-`scdoc` is available in many distribution repositories, and if it's not, it can
-be simply downloaded [here](https://git.sr.ht/~sircmpwn/scdoc) and placed on
-your PATH.
-
-An example `scdoc` file can be found below.
+Notes should be written in [Markdown format](https://pandoc.org/MANUAL.html#pandocs-markdown).
+See below for an example.
 
 ````
-foo(1)
-
 # NAME
 
 foo - A description of foo
@@ -79,21 +70,29 @@ foo - A description of foo
 
 Some notes about foo that I want to remember.
 
-	Tabs should be used for indenting.
-
 ## SUBHEADING
 
-This is *bold* text, and this is _underlined_ text.
+This is **bold** text, this is _italic_ text, and this is `preformatted` text.
 
-*-f*
-	Force foo to do something
+You can use definition lists to enumerate flags and options:
 
-*-r*
-	Make foo use the -r flag
+-f
+: Force foo to do something
+
+-r
+: Make foo use the -r flag
+
+Tables are also supported:
+
+| Day       | Task  |
+| ---       | ----  |
+| Monday    | Clean |
+| Wednesday | Sweep |
 
 
 ```
-Use triple backticks to escape all scdoc formatting
-For example, *this text* will not be bold, and _this text_ will not be underlined.
+Use triple backticks to escape all formatting.
+For example, **this text** will not be bold, and _this text_ will not be underlined.
+This is useful for blocks of code or other preformatted text.
 ```
 ````

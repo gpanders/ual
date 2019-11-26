@@ -17,23 +17,23 @@ ual() {
                 return
             fi
             mkdir -p "$NOTES"
-            NOTE="$NOTES"/$2.scd
-            if [[ ! -f "$NOTE" ]]; then
-                printf '%s(1) "" "ual"\n\n# NAME\n\n%s\n' "$2" "$2" > "$NOTE"
+            note="$NOTES"/$2.md
+            if [[ ! -f "$note" ]]; then
+                printf '%s(1) "" "ual"\n\n# NAME\n\n%s\n' "$2" "$2" > "$note"
             fi
-            ${EDITOR:-vi} "$NOTE"
+            ${EDITOR:-vi} "$note"
             ;;
         rm)
             if [[ $# -lt 2 ]]; then
                 echo "Which ual page do you want to remove?"
                 return
             fi
-            NOTE="$NOTES"/$2.scd
-            if [[ ! -f "$NOTE" ]]; then
+            note="$NOTES"/$2.md
+            if [[ ! -f "$note" ]]; then
                 echo "No ual entry for $1" >&2
                 return 1
             fi
-            rm "$NOTE"
+            rm "$note"
             ;;
         ls)
             for note in "$NOTES"/*; do
@@ -51,15 +51,34 @@ ual() {
             echo "Done."
             ;;
         *)
-            NOTE="$NOTES"/$1.scd
+            note="$NOTES"/$1.md
 
-            if [[ ! -f "$NOTE" ]]; then
+            if [[ ! -f "$note" ]]; then
                 echo "No ual entry for $1" >&2
                 return 1
             fi
 
+            if ! command -v pandoc >/dev/null 2>&1; then
+                echo "pandoc must be installed in order to view notes" >&2
+                return 1
+            fi
+
+            title=$(tr '[:lower:]' '[:upper:]' <<< "$1")
+            date=$(date -r "$note" "+%B %d, %Y")
+            author=$(id -F || getent passwd "$USER" | cut -d ':' -f 5)
             tmp=$(mktemp)
-            scdoc < "$NOTE" > "$tmp"
+
+            sed -E 's/`[^`]+`/_&_/g' "$note" |
+            pandoc \
+                --standalone \
+                --from markdown \
+                --to man \
+                --metadata title="$title" \
+                --metadata date="$date" \
+                --metadata author="$author" \
+                --metadata section=ual \
+                --output "$tmp"
+
             man "$tmp"
             rm -f "$tmp"
             ;;
