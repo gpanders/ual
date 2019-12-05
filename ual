@@ -65,7 +65,7 @@ ual() {
 
             title=$(tr '[:lower:]' '[:upper:]' <<< "$1")
             date=$(date -r "$note" "+%B %d, %Y")
-            author=$(id -F || getent passwd "$USER" | cut -d ':' -f 5)
+            author=$(id -F 2>/dev/null || getent passwd "$USER" | cut -d ':' -f 5)
             tmp=$(mktemp)
 
             sed -E 's/`[^`]+`/_&_/g' "$note" |
