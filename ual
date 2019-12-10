@@ -19,7 +19,7 @@ ual() {
             mkdir -p "$NOTES"
             note="$NOTES"/$2.md
             if [[ ! -f "$note" ]]; then
-                printf '%s(1) "" "ual"\n\n# NAME\n\n%s\n' "$2" "$2" > "$note"
+                printf '# NAME\n\n%s\n\n' "$2" > "$note"
             fi
             ${EDITOR:-vi} "$note"
             ;;
