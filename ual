@@ -40,12 +40,13 @@ ual() {
             ;;
         sync)
             printf 'Syncing notes... '
-            (cd "$NOTES" && \
-                git pull &>/dev/null && \
-                git add . && \
-                git commit --dry-run &>/dev/null && \
-                git commit --quiet --verbose 2>/dev/null && \
-                git push &>/dev/null)
+            cd "$NOTES" || return 1
+            git stash push --quiet && git pull --rebase >/dev/null 2>&1 && git stash pop --quiet 2>/dev/null
+            git add -- *.md
+            if ! git diff-index --quiet HEAD --; then
+                git commit --quiet --verbose 2>/dev/null
+                git push >/dev/null 2>&1
+            fi
             echo "Done."
             ;;
         *)
