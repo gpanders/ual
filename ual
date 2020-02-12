@@ -1,35 +1,33 @@
-#!/usr/bin/env bash
-
-set -e
+#!/bin/sh
 
 NOTES="${UAL_PATH:-$HOME/.notes}"
 
 ual() {
-    if [[ $# -lt 1 ]]; then
+    if [ $# -lt 1 ]; then
         echo "Which ual page do you want?"
         return
     fi
 
     case "$1" in
         edit)
-            if [[ $# -lt 2 ]]; then
+            if [ $# -lt 2 ]; then
                 echo "Which ual page do you want to edit?"
                 return
             fi
             mkdir -p "$NOTES"
             note="$NOTES"/$2.md
-            if [[ ! -f "$note" ]]; then
+            if [ ! -f "$note" ]; then
                 printf '# NAME\n\n%s\n\n' "$2" > "$note"
             fi
             ${EDITOR:-vi} "$note"
             ;;
         rm)
-            if [[ $# -lt 2 ]]; then
+            if [ $# -lt 2 ]; then
                 echo "Which ual page do you want to remove?"
                 return
             fi
             note="$NOTES"/$2.md
-            if [[ ! -f "$note" ]]; then
+            if [ ! -f "$note" ]; then
                 echo "No ual entry for $1" >&2
                 return 1
             fi
@@ -41,7 +39,7 @@ ual() {
             done
             ;;
         sync)
-            echo -n "Syncing notes... "
+            printf 'Syncing notes... '
             (cd "$NOTES" && \
                 git pull &>/dev/null && \
                 git add . && \
@@ -53,7 +51,7 @@ ual() {
         *)
             note="$NOTES"/$1.md
 
-            if [[ ! -f "$note" ]]; then
+            if [ ! -f "$note" ]; then
                 echo "No ual entry for $1" >&2
                 return 1
             fi
@@ -63,7 +61,7 @@ ual() {
                 return 1
             fi
 
-            title=$(tr '[:lower:]' '[:upper:]' <<< "$1")
+            title=$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')
             date=$(date -r "$note" "+%B %d, %Y")
             author=$(id -F 2>/dev/null || getent passwd "$USER" | cut -d ':' -f 5)
             tmp=$(mktemp)
