@@ -14,8 +14,11 @@ ual() {
                 echo "Which ual page do you want to edit?"
                 return
             fi
+
             mkdir -p "$NOTES"
-            note="$NOTES"/$2.md
+            cd "$NOTES" || return 1
+
+            note="$2.md"
             if [ ! -f "$note" ]; then
                 printf '# NAME\n\n%s\n\n' "$2" > "$note"
             fi
