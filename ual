@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NOTES="${UAL_PATH:-$HOME/.notes}"
+NOTES="${UAL_PATH:-${XDG_DATA_HOME:-$HOME/.local/share}/ual}"
 
 ual() {
     if [ $# -lt 1 ]; then

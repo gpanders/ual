@@ -53,8 +53,9 @@ notes with
 
     ual sync
 
-`ual` will look for notes in `$UAL_PATH` or `$HOME/.notes` if `$UAL_PATH` is
-unset.
+`ual` will look for notes in `$UAL_PATH` or `$XDG_DATA_HOME/ual` if `$UAL_PATH`
+is unset. `$XDG_DATA_HOME` resolves to `$HOME/.local/share` unless specifically
+set otherwise.
 
 ## Writing Notes
 
