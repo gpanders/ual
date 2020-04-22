@@ -3,87 +3,87 @@
 NOTES="${UAL_PATH:-${XDG_DATA_HOME:-$HOME/.local/share}/ual}"
 
 ual() {
-    if [ $# -lt 1 ]; then
-        echo "Which ual page do you want?"
-        return
-    fi
+	if [ $# -lt 1 ]; then
+		echo "Which ual page do you want?"
+		return
+	fi
 
-    case "$1" in
-        edit)
-            if [ $# -lt 2 ]; then
-                echo "Which ual page do you want to edit?"
-                return
-            fi
+	case "$1" in
+	edit)
+		if [ $# -lt 2 ]; then
+			echo "Which ual page do you want to edit?"
+			return
+		fi
 
-            mkdir -p "$NOTES"
-            cd "$NOTES" || return 1
+		mkdir -p "$NOTES"
+		cd "$NOTES" || return 1
 
-            note="$2.md"
-            if [ ! -f "$note" ]; then
-                printf '# NAME\n\n%s\n\n' "$2" > "$note"
-            fi
-            ${EDITOR:-vi} "$note"
-            ;;
-        rm)
-            if [ $# -lt 2 ]; then
-                echo "Which ual page do you want to remove?"
-                return
-            fi
-            note="$NOTES"/$2.md
-            if [ ! -f "$note" ]; then
-                echo "No ual entry for $1" >&2
-                return 1
-            fi
-            rm "$note"
-            ;;
-        ls)
-            for note in "$NOTES"/*; do
-                command basename -- "${note%.*}"
-            done
-            ;;
-        sync)
-            printf 'Syncing notes... '
-            cd "$NOTES" || return 1
-            git stash push --quiet && git pull --rebase >/dev/null 2>&1 && git stash pop --quiet 2>/dev/null
-            git add -- *.md
-            if ! git diff-index --quiet HEAD --; then
-                git commit --quiet --verbose 2>/dev/null
-                git push >/dev/null 2>&1
-            fi
-            echo "Done."
-            ;;
-        *)
-            note="$NOTES"/$1.md
+		note="$2.md"
+		if [ ! -f "$note" ]; then
+			printf '# NAME\n\n%s\n\n' "$2" >"$note"
+		fi
+		${EDITOR:-vi} "$note"
+		;;
+	rm)
+		if [ $# -lt 2 ]; then
+			echo "Which ual page do you want to remove?"
+			return
+		fi
+		note="$NOTES"/$2.md
+		if [ ! -f "$note" ]; then
+			echo "No ual entry for $1" >&2
+			return 1
+		fi
+		rm "$note"
+		;;
+	ls)
+		for note in "$NOTES"/*; do
+			command basename -- "${note%.*}"
+		done
+		;;
+	sync)
+		printf 'Syncing notes... '
+		cd "$NOTES" || return 1
+		git stash push --quiet && git pull --rebase >/dev/null 2>&1 && git stash pop --quiet 2>/dev/null
+		git add -- *.md
+		if ! git diff-index --quiet HEAD --; then
+			git commit --quiet --verbose 2>/dev/null
+			git push >/dev/null 2>&1
+		fi
+		echo "Done."
+		;;
+	*)
+		note="$NOTES"/$1.md
 
-            if [ ! -f "$note" ]; then
-                echo "No ual entry for $1" >&2
-                return 1
-            fi
+		if [ ! -f "$note" ]; then
+			echo "No ual entry for $1" >&2
+			return 1
+		fi
 
-            if ! command -v pandoc >/dev/null 2>&1; then
-                echo "pandoc must be installed in order to view notes" >&2
-                return 1
-            fi
+		if ! command -v pandoc >/dev/null 2>&1; then
+			echo "pandoc must be installed in order to view notes" >&2
+			return 1
+		fi
 
-            title=$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')
-            date=$(date -r "$note" "+%B %d, %Y")
-            author=$(id -F 2>/dev/null || getent passwd "$USER" | cut -d ':' -f 5)
-            tmp=$(mktemp)
+		title=$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')
+		date=$(date -r "$note" "+%B %d, %Y")
+		author=$(id -F 2>/dev/null || getent passwd "$USER" | cut -d ':' -f 5)
+		tmp=$(mktemp)
 
-            sed -E 's/`[^`]+`/_&_/g' "$note" |
-            pandoc \
-                --standalone \
-                --from markdown \
-                --to man \
-                --metadata title="$title" \
-                --metadata date="$date" \
-                --metadata author="$author" \
-                --metadata section=ual \
-                --output "$tmp"
+		sed -E 's/`[^`]+`/_&_/g' "$note" |
+			pandoc \
+				--standalone \
+				--from markdown \
+				--to man \
+				--metadata title="$title" \
+				--metadata date="$date" \
+				--metadata author="$author" \
+				--metadata section=ual \
+				--output "$tmp"
 
-            man "$tmp"
-            rm -f "$tmp"
-            ;;
-    esac
+		man "$tmp"
+		rm -f "$tmp"
+		;;
+	esac
 }
 ual "$@"
